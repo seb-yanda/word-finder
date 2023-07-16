@@ -19,7 +19,7 @@ class Grid {
 	 * @param {Array} grid - 1D array of the grid (used if the grid has been generated before)
 	 * @param {Object[]} words - array of all the words on the grid
 	 */
-	constructor(width, grid = null) {
+	constructor(width, grid = null, words = null) {
 		if (!width) throw new Error(`Width can't be missing.`);
 
 		if (isNaN(width)) throw new Error('Width must be a number.');
@@ -36,6 +36,16 @@ class Grid {
 		if (grid) {
 			this.grid = [].concat(...grid); // ensures the grid is in 1D
 			this.words = grid.words;
+		} else if(words) {
+			this.words = words;
+			this.grid = this.placeWordsOnGrid(
+				[...this.words],
+				[...new Array(this.size)]
+			);
+
+			if(!this.grid)
+				throw new Error('Could not place words on the grid!');
+			else this.grid = this.fillEmptyGridCells();
 		} else {
 			this.words = randWords({
 				exactly: Math.floor(width + width / 2),

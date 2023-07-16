@@ -7,7 +7,12 @@ const _ = require('lodash');
  */
 exports.newGrid = (req, res) => {
 	try {
-		const grid = new Grid(+req.query.width);
+
+		let words = null;
+		if(req.body.words) {
+			words = req.body.words.map( w => w.string );
+		}
+		const grid = new Grid(+req.query.width,null,words);
 
 		return res.send({
 			words: _.map(grid.words, (word) => ({

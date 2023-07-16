@@ -6,6 +6,7 @@ const gridController = require('../controllers/gridController');
 const gridValidator = require('../validators/gridValidator');
 
 router.get('/new', gridValidator.newGrid, gridController.newGrid);
+router.post('/new', gridValidator.newGrid, gridController.newGrid);
 router.post('/select', gridValidator.selectWord, gridController.selectWord);
 
 module.exports = router;

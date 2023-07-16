@@ -19,7 +19,10 @@ const Game = () => {
 				words={words}
 				setWords={setWords}
 			/>
-			<Words words={words} />
+			<Words
+				words={words}
+				setGrid={setGrid}
+				setWords={setWords} />
 		</div>
 	);
 };
