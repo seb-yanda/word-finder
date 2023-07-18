@@ -30,9 +30,10 @@ class Grid {
 		if (width > MAX_WIDTH)
 			throw new Error(`Width can't be more than ${MAX_WIDTH}`);
 
+			
 		this.width = width;
 		this.size = Math.pow(width, 2);
-
+		
 		if (grid) {
 			this.grid = [].concat(...grid); // ensures the grid is in 1D
 			this.words = grid.words;
@@ -41,10 +42,14 @@ class Grid {
 			this.grid = this.placeWordsOnGrid(
 				[...this.words],
 				[...new Array(this.size)]
-			);
+				);
+			
 
-			if(!this.grid)
+			if(!this.grid){
+				console.log("Could not place words on the grid");
 				throw new Error('Could not place words on the grid!');
+
+			}
 			else this.grid = this.fillEmptyGridCells();
 		} else {
 			this.words = randWords({
@@ -275,8 +280,10 @@ class Grid {
 	 */
 	fillEmptyGridCells() {
 		return this.grid.map(
-			(cell) =>
-				cell || String.fromCharCode(Math.floor(Math.random() * 25 + 97))
+			(cell) => {
+				let _letter = cell || String.fromCharCode(Math.floor(Math.random() * 25 + 97))
+				return _letter.toUpperCase();
+			}
 		);
 	}
 

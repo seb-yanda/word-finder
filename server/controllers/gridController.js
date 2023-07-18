@@ -14,6 +14,7 @@ exports.newGrid = (req, res) => {
 		}
 		const grid = new Grid(+req.query.width,null,words);
 
+
 		return res.send({
 			words: _.map(grid.words, (word) => ({
 				isSelected: false,

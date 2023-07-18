@@ -1,4 +1,18 @@
 .game-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
+	display: grid;
+	grid-template-columns: repeat(3,1fr);
+	grid-template-areas: "grid grid builder"
+						 "words words builder";
+}
+
+.grid {
+	grid-area: grid;
+}
+
+.words {
+	grid-area: words;
+}
+
+.builder {
+	grid-area: builder;
 }

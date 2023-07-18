@@ -1,18 +1,13 @@
 .words-wrapper .title {
 	font-weight: bold;
 	font-size: 34px;
-	margin-block: 3rem 1rem;
-}
-
-.grid-words {
-	columns:4;
 }
 
 .word {
 	padding: 3px 0;
-	text-transform: uppercase;
-	flex-basis: 25%;
+    text-transform: uppercase;
 }
+
 
 .selected {
 	color: lightgray;
