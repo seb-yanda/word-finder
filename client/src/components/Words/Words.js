@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState,useEffect } from 'react';
 import axios from 'axios'
 
 import './Words.css';
@@ -7,12 +7,13 @@ import './Words.css';
 
 const Words = ({ words, setGrid, setWords }) => {
 
-	const [wordArray,setWordArray] = React.useState([])
+	const [wordArray,setWordArray] = useState([])
 	const newWordInput = useRef()
+	const gridSizeInput = useRef()
 
 	const API_HOST = process.env.REACT_APP_API_HOST;
 
-	React.useEffect( () => {
+	useEffect( () => {
 		setWordArray(words)
 	},[words]);
 
@@ -27,11 +28,13 @@ const Words = ({ words, setGrid, setWords }) => {
 	])
 
 	const generateGrid = () => {
-		axios.post(`${API_HOST}/api/grid/new?width=15`,{
+		axios.post(`${API_HOST}/api/grid/new?width=${gridSizeInput.current.value}`,{
 			words: wordArray
 		}).then((res) => {
 			setGrid(res.data.grid)
 			setWords(res.data.words)
+		}).catch( (err) => {
+			console.error(err)
 		})
 	}
 
@@ -39,7 +42,11 @@ const Words = ({ words, setGrid, setWords }) => {
 	return  (
 		<div className='words-wrapper noselect'>
 			<div className='title'>Words</div>
-			{wordArray.map((word, i) => (
+			{wordArray.sort((l,r) => {
+				if(l.string > r.string) return 1;
+				if(l.string < r.string) return -1;
+				return 0;
+			}).map((word, i) => (
 				<div
 					key={i}
 					className={`word ${word.isSelected ? 'selected' : ''}`}
@@ -52,18 +59,26 @@ const Words = ({ words, setGrid, setWords }) => {
 			<div style={{display:'inline-flex', gap:'10px'}}>
 				<input type="text" ref={newWordInput} />
 				<button onClick={()=>{
-					handleAddWord( newWordInput.current.value )
+					handleAddWord( (newWordInput.current.value).toLowerCase() )
 					newWordInput.current.value = ""
-				}}> + </button>
+					newWordInput.current.focus()
+				}}  style={{paddingBlock:'5px', paddingInline:'10px'}}> + </button>
 			</div>
 			<hr/>
-			<button onClick={()=>{
-				generateGrid();
-			}} style={{paddingBlock:'5px', paddingInline:'10px'}}>Generate</button>
+			<div style={{display:'inline-flex', gap:'10px'}}>
+				<select ref={gridSizeInput} defaultValue={12}>
+					<option>10</option>
+					<option>12</option>
+					<option>15</option>
+				</select>
+				<button onClick={()=>{
+					generateGrid();
+				}} style={{paddingBlock:'5px', paddingInline:'10px'}}>Generate</button>
+			</div>
 			<hr/>
 			<button onClick={ () => {
 				setWordArray([])
-			}}>Clear</button>
+			}} style={{paddingBlock:'5px', paddingInline:'10px'}}>Clear</button>
 		</div>
 	) 
 };
