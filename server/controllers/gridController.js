@@ -25,6 +25,7 @@ exports.newGrid = (req, res) => {
 			words: _.map(grid.words, (word) => ({
 				isSelected: false,
 				string: word,
+				label: word,
 				fromCell: null,
 				toCell: null,
 			})),

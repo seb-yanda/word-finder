@@ -302,7 +302,7 @@ class Grid {
 		// failed to place word so pushing it back before returning
 		// console.log(" ------------------ ")
 		words.push(word);
-		failedAttempts++;
+		// failedAttempts++;
 		return null;
 	}
 
