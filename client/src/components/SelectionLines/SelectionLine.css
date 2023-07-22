@@ -24,7 +24,7 @@
 .line.selected,
 .selected::before,
 .selected::after {
-	background-color: lightblue;
+	background-color: #bbb;
 }
 
 .line::before,

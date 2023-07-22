@@ -8,12 +8,18 @@ const _ = require('lodash');
 exports.newGrid = (req, res) => {
 	try {
 
+		const startTime = Date.now()
+
 		let words = null;
 		if(req.body.words) {
 			words = req.body.words.map( w => w.string );
 		}
 		const grid = new Grid(+req.query.width,null,words);
 
+		const gridIn2D = grid.getGridIn2D()
+		const afterGrid = Date.now()
+
+		console.log( "Grid generated in ", (afterGrid - startTime) / 1000, " seconds")
 
 		return res.send({
 			words: _.map(grid.words, (word) => ({
@@ -25,7 +31,7 @@ exports.newGrid = (req, res) => {
 			grid: {
 				width: grid.width,
 				size: grid.size,
-				gridIn2D: grid.getGridIn2D(),
+				gridIn2D: gridIn2D,
 			},
 		});
 	} catch (err) {
@@ -58,6 +64,10 @@ exports.selectWord = (req, res) => {
 		const selectedString = grid
 			.getWordBetweenIndexes(fromCell, toCell)
 			.join('');
+
+		console.log(selectedString)
+		console.log(words.map( (w) => w.string));
+
 		if (_.find(words, (word) => word.string === selectedString)) {
 			return res.send({
 				isValidWord: true,

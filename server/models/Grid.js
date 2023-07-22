@@ -20,6 +20,7 @@ class Grid {
 	 * @param {Object[]} words - array of all the words on the grid
 	 */
 	constructor(width, grid = null, words = null) {
+		
 		if (!width) throw new Error(`Width can't be missing.`);
 
 		if (isNaN(width)) throw new Error('Width must be a number.');
@@ -34,6 +35,8 @@ class Grid {
 		this.width = width;
 		this.size = Math.pow(width, 2);
 		
+
+
 		if (grid) {
 			this.grid = [].concat(...grid); // ensures the grid is in 1D
 			this.words = grid.words;
@@ -74,6 +77,7 @@ class Grid {
 	getGridIn2D() {
 		const grid = [];
 		for (let w = 0; w < this.width; w++) {
+			console.log("Generating column: ",w)
 			grid[w] = [];
 			for (let h = 0; h < this.width; h++) {
 				grid[w].push(this.grid[this.getIndex(w, h)]);
@@ -240,19 +244,34 @@ class Grid {
 	 * @param {Array} grid - the current grid where the next word should be attempted to be placed
 	 */
 	placeWordsOnGrid(words, grid) {
+		const startTime = Date.now()
+		
+		let failedWords = [];
 		let word = words.pop();
 		// no more words in the list therefore all have been placed
 		if (!word) return grid;
 
 		const indexes = shuffle([...Array(this.size).keys()]);
 		// loop through all the possible indexes in the grid
+		const beforeLoop = Date.now()
+		// console.log( "Starting loop after: "+(beforeLoop-startTime)*1000+" seconds")
+		indexLoop:
 		while (indexes.length > 0) {
+			let failedAttempts = 0
 			const index = indexes.pop();
 
 			const directions = shuffle(Object.keys(GRID_DIRECTIONS));
 			// loop through all the possible directions
+			directionsLoop:
 			while (directions.length > 0) {
 				const direction = directions.pop();
+				console.log(`Trying to place [${word}] on the grid in a [${direction}] direction at index: [${index}]`)
+
+				if(failedAttempts > directions.length){
+					console.log("Failed to place word in all available directions");
+					continue indexLoop;
+				}
+
 				const gridWithWord = this.tryPlacingWord(
 					word,
 					grid,
@@ -261,17 +280,29 @@ class Grid {
 				);
 
 				// placing the word was not successful therefore attempt the next direction
-				if (!gridWithWord) continue;
+				if (!gridWithWord) continue directionsLoop;
 
 				const newGrid = this.placeWordsOnGrid(words, gridWithWord);
 
 				// check if the grid was successfuly filled
-				if (newGrid) return newGrid;
+				if (newGrid) {
+					console.log("Placed word: "+word+" (in "+direction+")")
+					return newGrid;
+				} else {
+					console.log("Failed to place word: "+word+" (in "+direction+" direction)")
+					failedAttempts++
+				}
 			}
+
+
 		}
 
+		console.log(failedWords);
+
 		// failed to place word so pushing it back before returning
+		// console.log(" ------------------ ")
 		words.push(word);
+		failedAttempts++;
 		return null;
 	}
 

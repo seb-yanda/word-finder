@@ -2,6 +2,7 @@ import React, { useRef, useState,useEffect } from 'react';
 import axios from 'axios'
 
 import './QuickCreate.css';
+import html2canvas from 'html2canvas';
 
 
 
@@ -20,18 +21,19 @@ const QuickCreate = ({ words, setGrid, setWords }) => {
 
 	const handleSetWords = (words) => {
         
-        setWordArray(
-            words.split('\n')
-                .map( (w) => w.toUpperCase().replaceAll(/[^A-Z]/g,''))
-                .map( (w) => ({
-                    isSelected: false,
-                    string:w,
-                    fromCell:null,
-                    toCell:null
-                }))
-        )
+        const allWords = words
+            .split('\n')
+            .map( (w) => w.toUpperCase().replaceAll(/[^A-Z ]/g,'').trim() ).map( (w) => ({
+                isSelected: false,
+                string:w.replaceAll(/[^A-Z]/g,''),
+                label: w,
+                fromCell:null,
+                toCell:null
+        }))
+
+        setWordArray(allWords)
         
-        setGridSize( Math.max(getLongestWord(wordArray).string.length, 10) )
+        setGridSize( Math.max(getLongestWord(allWords).string.length, 10) )
     }
 
 
@@ -46,7 +48,7 @@ const QuickCreate = ({ words, setGrid, setWords }) => {
 			words: wordArray
 		}).then((res) => {
 			setGrid(res.data.grid)
-			setWords(res.data.words)
+			setWords(wordArray)
 		}).catch( (err) => {
 			console.error(err)
 		})
@@ -58,7 +60,7 @@ const QuickCreate = ({ words, setGrid, setWords }) => {
 			<div className='title'>Builder</div>
 			<div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
 				<textarea ref={wordsInput}  style={{height:500}} />
-                <button onClick={ () => handleSetWords(wordsInput.current.value) }>Set Words Array</button>
+                <button style={{paddingBlock:10}} onClick={ () => handleSetWords(wordsInput.current.value) }>Set Words Array</button>
 			</div>
 			<hr/>
 			<div style={{display:'inline-flex', gap:'10px'}}>
@@ -72,6 +74,43 @@ const QuickCreate = ({ words, setGrid, setWords }) => {
 			<button onClick={ () => {
 				setWordArray([])
 			}} style={{paddingBlock:'5px', paddingInline:'10px'}}>Clear</button>
+            <hr/>
+            <button onClick={() => {
+                html2canvas(document.querySelector('.grid-wrapper'),{
+                    scale:2,
+                    backgroundColor: null,
+
+                }).then( canvas => {
+                    canvas.classList.add('img-save')
+                    document.body.appendChild(canvas)
+                })
+
+                html2canvas(document.querySelector('.grid-wrapper'),{
+                    scale:2,
+                    backgroundColor: null,
+                    ignoreElements: (el) => {
+                        return el.classList.contains('line')
+                    }
+                    
+                }).then( canvas => {
+                    canvas.classList.add('img-save')
+                    document.body.appendChild(canvas)
+                })
+
+                Array.from( document.querySelectorAll('.word.selected') ).forEach( (el) => el.classList.remove('selected') );
+
+                html2canvas(document.querySelector('.grid-words'),{
+                    scale:2,
+                    backgroundColor: null,
+                    ignoreElements: (el) => {
+                        return el.classList.contains('word-length')
+                    }
+                    
+                }).then( canvas => {
+                    canvas.classList.add('img-save')
+                    document.body.appendChild(canvas)
+                })
+            }} style={{padding:5}}>Save</button>
 		</div>
 	) 
 };

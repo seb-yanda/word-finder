@@ -26,7 +26,10 @@ const Words = ({ words, setGrid, setWords }) => {
 					className={`word ${word.isSelected ? 'selected' : ''}`}
 					style={{flexBasis:'25%'}}
 				>
-					{`${word.string} (${word.string.length})`}
+					<>
+						{word.label}
+						<span className="word-length"> ({word.string.length})</span>
+					</>
 				</div>
 			))}
 
